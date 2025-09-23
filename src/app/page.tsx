@@ -1,103 +1,195 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { EisenhowerMatrix } from '@/components/matrix/EisenhowerMatrix'
+import { TaskModal } from '@/components/tasks/TaskModal'
+import { useTasks } from '@/hooks/useTasks'
+import { useState } from 'react'
+import { CreateTaskData, UpdateTaskData } from '@/types'
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+export default function HomePage() {
+  const { tasks, loading, error, createTask, updateTask, deleteTask, moveTask } = useTasks()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleTaskMove = async (taskId: number, newUrgency: number, newImportance: number) => {
+    try {
+      await moveTask(taskId, newUrgency, newImportance)
+    } catch (err) {
+      console.error('Failed to move task:', err)
+    }
+  }
+
+  const handleTaskUpdate = async (taskId: number, updates: UpdateTaskData) => {
+    try {
+      await updateTask(taskId, updates)
+    } catch (err) {
+      console.error('Failed to update task:', err)
+    }
+  }
+
+  const handleTaskDelete = async (taskId: number) => {
+    try {
+      await deleteTask(taskId)
+    } catch (err) {
+      console.error('Failed to delete task:', err)
+    }
+  }
+
+  const handleCreateTask = async (data: CreateTaskData) => {
+    try {
+      await createTask(data)
+    } catch (err) {
+      console.error('Failed to create task:', err)
+    }
+  }
+
+  const completedToday = tasks.filter(task => 
+    task.status === 'completed' && 
+    task.completedAt && 
+    new Date(task.completedAt).toDateString() === new Date().toDateString()
+  ).length
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading your tasks...</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Tasks</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto py-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Eighty20 Dashboard</h1>
+        <p className="text-muted-foreground">
+          Focus on the 20% of tasks that drive 80% of your results using the Eisenhower Matrix.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Eisenhower Matrix */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Eisenhower Matrix</CardTitle>
+              <CardDescription>
+                Organize your tasks by urgency and importance. Drag tasks between quadrants to reprioritize.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EisenhowerMatrix
+                tasks={tasks}
+                onTaskMove={handleTaskMove}
+                onTaskUpdate={handleTaskUpdate}
+                onTaskDelete={handleTaskDelete}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Stats</CardTitle>
+            <CardDescription>Your productivity overview</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Total Tasks</span>
+                <span className="text-2xl font-bold">{tasks.length}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Completed Today</span>
+                <span className="text-2xl font-bold" style={{ color: '#10B981' }}>{completedToday}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Focus Time</span>
+                <span className="text-2xl font-bold" style={{ color: '#3B82F6' }}>0h</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+            <CardDescription>Your latest task updates</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {tasks.length > 0 ? (
+                tasks.slice(0, 3).map(task => (
+                  <div key={task.id} className="text-sm">
+                    <span className="font-medium">{task.title}</span>
+                    <span className="text-muted-foreground ml-2">
+                      {task.status === 'completed' ? '✓ Completed' : '⏳ In Progress'}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  No recent activity. Start by adding your first task!
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Call to Action */}
+      <Card 
+        className="border-2"
+        style={{ 
+          background: 'linear-gradient(to right, #DBEAFE, #FEF3C7)',
+          borderColor: '#3B82F6'
+        }}
+      >
+        <CardContent className="pt-6">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-2">Ready to boost your productivity?</h3>
+            <p className="text-muted-foreground mb-4">
+              Start by adding your first task to the Eisenhower Matrix
+            </p>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors"
+            >
+              Add Your First Task
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Task Modal */}
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateTask}
+      />
     </div>
-  );
+  )
 }

@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  urgency     Int      @default(1) // 1-4 scale
+  importance  Int      @default(1) // 1-4 scale
+  status      String   @default("pending") // pending, in_progress, completed, cancelled
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  analytics TaskAnalytics[]
+
+  @@map("tasks")
+}
+
+model TaskAnalytics {
+  id              Int      @id @default(autoincrement())
+  taskId          Int
+  timeSpent       Int?     // in minutes
+  completionDate  DateTime?
+  impactScore     Int?     // 1-10 scale
+  satisfactionScore Int?   // 1-10 scale
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_analytics")
+}
