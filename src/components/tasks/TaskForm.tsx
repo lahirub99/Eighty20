@@ -34,6 +34,22 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
     }
   }
 
+  const handleUrgencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const numValue = value === '' ? 1 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+      setFormData({ ...formData, urgency: numValue })
+    }
+  }
+
+  const handleImportanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const numValue = value === '' ? 1 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+      setFormData({ ...formData, importance: numValue })
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -75,7 +91,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
                 min="1"
                 max="4"
                 value={formData.urgency}
-                onChange={(e) => setFormData({ ...formData, urgency: parseInt(e.target.value) })}
+                onChange={handleUrgencyChange}
               />
             </div>
             <div>
@@ -86,7 +102,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
                 min="1"
                 max="4"
                 value={formData.importance}
-                onChange={(e) => setFormData({ ...formData, importance: parseInt(e.target.value) })}
+                onChange={handleImportanceChange}
               />
             </div>
           </div>

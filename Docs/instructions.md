@@ -15,3 +15,5 @@ Please structure your recommendations to include:
 - Technical Recommendations: Suggestions on platform compatibility, data visualization techniques, and potential integrations with calendar or reminder systems.
 
 Leverage your expertise in productivity methodologies and app design to ensure the solution is both conceptually robust and practically implementable, delivering measurable improvements in user task management and efficiency.
+
+Imp: Add git commits along the way, after every instruction step
