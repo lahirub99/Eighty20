@@ -6,6 +6,8 @@ import { TaskModal } from '@/components/tasks/TaskModal'
 import { useTasks } from '@/hooks/useTasks'
 import { useState } from 'react'
 import { CreateTaskData, UpdateTaskData } from '@/types'
+import { Badge } from '@/components/ui/Badge'
+import Link from 'next/link'
 
 export default function HomePage() {
   const { tasks, loading, error, createTask, updateTask, deleteTask, moveTask } = useTasks()
@@ -43,11 +45,23 @@ export default function HomePage() {
     }
   }
 
+  // Calculate statistics
   const completedToday = tasks.filter(task => 
     task.status === 'completed' && 
     task.completedAt && 
     new Date(task.completedAt).toDateString() === new Date().toDateString()
   ).length
+
+  const totalTasks = tasks.length
+  const completedTasks = tasks.filter(task => task.status === 'completed').length
+  const inProgressTasks = tasks.filter(task => task.status === 'in_progress').length
+  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
+
+  // Quadrant statistics
+  const q1Tasks = tasks.filter(task => task.urgency >= 3 && task.importance >= 3)
+  const q2Tasks = tasks.filter(task => task.importance >= 3 && task.urgency < 3)
+  const q3Tasks = tasks.filter(task => task.urgency >= 3 && task.importance < 3)
+  const q4Tasks = tasks.filter(task => task.urgency < 3 && task.importance < 3)
 
   if (loading) {
     return (
@@ -88,6 +102,65 @@ export default function HomePage() {
         </p>
       </div>
 
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Tasks</p>
+                <p className="text-2xl font-bold">{totalTasks}</p>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <span className="text-blue-600 text-sm">📋</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Completed Today</p>
+                <p className="text-2xl font-bold" style={{ color: '#10B981' }}>{completedToday}</p>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">In Progress</p>
+                <p className="text-2xl font-bold" style={{ color: '#3B82F6' }}>{inProgressTasks}</p>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <span className="text-blue-600 text-sm">▶️</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Completion Rate</p>
+                <p className="text-2xl font-bold" style={{ color: '#F59E0B' }}>{completionRate}%</p>
+              </div>
+              <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                <span className="text-yellow-600 text-sm">📊</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Eisenhower Matrix */}
         <div className="lg:col-span-2">
@@ -109,52 +182,100 @@ export default function HomePage() {
           </Card>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quadrant Overview */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>Your productivity overview</CardDescription>
+            <CardTitle>Quadrant Overview</CardTitle>
+            <CardDescription>Task distribution across quadrants</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Total Tasks</span>
-                <span className="text-2xl font-bold">{tasks.length}</span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#FEE2E2' }}>
+                <div>
+                  <p className="font-medium" style={{ color: '#991B1B' }}>Do First</p>
+                  <p className="text-sm" style={{ color: '#991B1B' }}>Urgent & Important</p>
+                </div>
+                <Badge style={{ backgroundColor: '#DC2626', color: 'white' }}>
+                  {q1Tasks.length}
+                </Badge>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Completed Today</span>
-                <span className="text-2xl font-bold" style={{ color: '#10B981' }}>{completedToday}</span>
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#FEF3C7' }}>
+                <div>
+                  <p className="font-medium" style={{ color: '#92400E' }}>Schedule</p>
+                  <p className="text-sm" style={{ color: '#92400E' }}>Important, Not Urgent</p>
+                </div>
+                <Badge style={{ backgroundColor: '#D97706', color: 'white' }}>
+                  {q2Tasks.length}
+                </Badge>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Focus Time</span>
-                <span className="text-2xl font-bold" style={{ color: '#3B82F6' }}>0h</span>
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#DBEAFE' }}>
+                <div>
+                  <p className="font-medium" style={{ color: '#1E40AF' }}>Delegate</p>
+                  <p className="text-sm" style={{ color: '#1E40AF' }}>Urgent, Not Important</p>
+                </div>
+                <Badge style={{ backgroundColor: '#2563EB', color: 'white' }}>
+                  {q3Tasks.length}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#D1FAE5' }}>
+                <div>
+                  <p className="font-medium" style={{ color: '#047857' }}>Eliminate</p>
+                  <p className="text-sm" style={{ color: '#047857' }}>Neither Urgent nor Important</p>
+                </div>
+                <Badge style={{ backgroundColor: '#059669', color: 'white' }}>
+                  {q4Tasks.length}
+                </Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest task updates</CardDescription>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common tasks and shortcuts</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {tasks.length > 0 ? (
-                tasks.slice(0, 3).map(task => (
-                  <div key={task.id} className="text-sm">
-                    <span className="font-medium">{task.title}</span>
-                    <span className="text-muted-foreground ml-2">
-                      {task.status === 'completed' ? '✓ Completed' : '⏳ In Progress'}
-                    </span>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">➕</span>
+                  <div>
+                    <p className="font-medium">Add New Task</p>
+                    <p className="text-sm text-muted-foreground">Create a new task</p>
                   </div>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground">
-                  No recent activity. Start by adding your first task!
                 </div>
-              )}
+              </button>
+              
+              <Link 
+                href="/tasks"
+                className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors block"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">📋</span>
+                  <div>
+                    <p className="font-medium">Manage Tasks</p>
+                    <p className="text-sm text-muted-foreground">View and edit all tasks</p>
+                  </div>
+                </div>
+              </Link>
+              
+              <Link 
+                href="/analytics"
+                className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors block"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">📊</span>
+                  <div>
+                    <p className="font-medium">View Analytics</p>
+                    <p className="text-sm text-muted-foreground">Track your productivity</p>
+                  </div>
+                </div>
+              </Link>
             </div>
           </CardContent>
         </Card>

@@ -50,6 +50,19 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
     }
   }
 
+  const getQuadrantDescription = (urgency: number, importance: number) => {
+    if (urgency >= 3 && importance >= 3) {
+      return "Do First - Urgent & Important"
+    }
+    if (importance >= 3 && urgency < 3) {
+      return "Schedule - Important, Not Urgent"
+    }
+    if (urgency >= 3 && importance < 3) {
+      return "Delegate - Urgent, Not Important"
+    }
+    return "Eliminate - Neither Urgent nor Important"
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -93,6 +106,9 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
                 value={formData.urgency}
                 onChange={handleUrgencyChange}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                1=Low, 2=Medium, 3=High, 4=Critical
+              </p>
             </div>
             <div>
               <Label htmlFor="importance">Importance (1-4)</Label>
@@ -104,7 +120,33 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
                 value={formData.importance}
                 onChange={handleImportanceChange}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                1=Low, 2=Medium, 3=High, 4=Critical
+              </p>
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="dueDate">Due Date</Label>
+            <Input
+              id="dueDate"
+              type="date"
+              value={formData.dueDate ? new Date(formData.dueDate).toISOString().split('T')[0] : ''}
+              onChange={(e) => setFormData({ 
+                ...formData, 
+                dueDate: e.target.value ? new Date(e.target.value) : undefined 
+              })}
+            />
+          </div>
+
+          {/* Quadrant Preview */}
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium text-gray-700">
+              This task will be placed in:
+            </p>
+            <p className="text-sm text-gray-600">
+              {getQuadrantDescription(formData.urgency, formData.importance)}
+            </p>
           </div>
 
           <div className="flex gap-2">
