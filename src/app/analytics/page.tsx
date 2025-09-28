@@ -3,6 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useTasks } from '@/hooks/useTasks'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
 export default function AnalyticsPage() {
   const { tasks, loading, error } = useTasks()
@@ -63,13 +65,80 @@ export default function AnalyticsPage() {
     new Date(task.completedAt) >= sevenDaysAgo
   )
 
+  // Chart data preparation
+  const quadrantData = [
+    { name: 'Do First', value: q1Tasks.length, color: '#EF4444' },
+    { name: 'Schedule', value: q2Tasks.length, color: '#F59E0B' },
+    { name: 'Delegate', value: q3Tasks.length, color: '#3B82F6' },
+    { name: 'Eliminate', value: q4Tasks.length, color: '#10B981' }
+  ]
+
+  const statusData = [
+    { name: 'Completed', value: completedTasks, color: '#10B981' },
+    { name: 'In Progress', value: inProgressTasks, color: '#3B82F6' },
+    { name: 'Pending', value: pendingTasks, color: '#F59E0B' },
+    { name: 'Cancelled', value: cancelledTasks, color: '#EF4444' }
+  ]
+
+  // Weekly completion data (last 7 days)
+  const weeklyData = []
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date()
+    date.setDate(date.getDate() - i)
+    const dayStart = new Date(date.setHours(0, 0, 0, 0))
+    const dayEnd = new Date(date.setHours(23, 59, 59, 999))
+    
+    const dayCompletions = tasks.filter(task => 
+      task.completedAt && 
+      new Date(task.completedAt) >= dayStart && 
+      new Date(task.completedAt) <= dayEnd
+    ).length
+
+    weeklyData.push({
+      day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      completions: dayCompletions
+    })
+  }
+
+  // Export functionality
+  const exportToCSV = () => {
+    const csvContent = [
+      ['Title', 'Description', 'Status', 'Urgency', 'Importance', 'Due Date', 'Completed At', 'Created At'],
+      ...tasks.map(task => [
+        task.title,
+        task.description || '',
+        task.status,
+        task.urgency,
+        task.importance,
+        task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '',
+        task.completedAt ? new Date(task.completedAt).toLocaleDateString() : '',
+        new Date(task.createdAt).toLocaleDateString()
+      ])
+    ].map(row => row.map(field => `"${field}"`).join(',')).join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `eighty20-tasks-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-        <p className="text-muted-foreground">
-          Insights into your productivity and task management patterns
-        </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+          <p className="text-muted-foreground">
+            Insights into your productivity and task management patterns
+          </p>
+        </div>
+        <Button onClick={exportToCSV} variant="outline">
+          📊 Export CSV
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -124,94 +193,98 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Eisenhower Matrix Distribution */}
+        {/* Eisenhower Matrix Distribution Chart */}
         <Card>
           <CardHeader>
             <CardTitle>Eisenhower Matrix Distribution</CardTitle>
             <CardDescription>How your tasks are distributed across quadrants</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#FEE2E2' }}>
-                <div>
-                  <p className="font-medium" style={{ color: '#991B1B' }}>Do First</p>
-                  <p className="text-sm" style={{ color: '#991B1B' }}>Urgent & Important</p>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={quadrantData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {quadrantData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {quadrantData.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: item.color }}
+                  ></div>
+                  <span className="text-sm">{item.name}: {item.value}</span>
                 </div>
-                <Badge style={{ backgroundColor: '#DC2626', color: 'white' }}>
-                  {q1Tasks.length}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#FEF3C7' }}>
-                <div>
-                  <p className="font-medium" style={{ color: '#92400E' }}>Schedule</p>
-                  <p className="text-sm" style={{ color: '#92400E' }}>Important, Not Urgent</p>
-                </div>
-                <Badge style={{ backgroundColor: '#D97706', color: 'white' }}>
-                  {q2Tasks.length}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#DBEAFE' }}>
-                <div>
-                  <p className="font-medium" style={{ color: '#1E40AF' }}>Delegate</p>
-                  <p className="text-sm" style={{ color: '#1E40AF' }}>Urgent, Not Important</p>
-                </div>
-                <Badge style={{ backgroundColor: '#2563EB', color: 'white' }}>
-                  {q3Tasks.length}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#D1FAE5' }}>
-                <div>
-                  <p className="font-medium" style={{ color: '#047857' }}>Eliminate</p>
-                  <p className="text-sm" style={{ color: '#047857' }}>Neither Urgent nor Important</p>
-                </div>
-                <Badge style={{ backgroundColor: '#059669', color: 'white' }}>
-                  {q4Tasks.length}
-                </Badge>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Task Status Breakdown */}
+        {/* Task Status Breakdown Chart */}
         <Card>
           <CardHeader>
             <CardTitle>Task Status Breakdown</CardTitle>
             <CardDescription>Current status of all your tasks</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-sm">Completed</span>
-                </div>
-                <span className="font-medium">{completedTasks}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-sm">In Progress</span>
-                </div>
-                <span className="font-medium">{inProgressTasks}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <span className="text-sm">Pending</span>
-                </div>
-                <span className="font-medium">{pendingTasks}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <span className="text-sm">Cancelled</span>
-                </div>
-                <span className="font-medium">{cancelledTasks}</span>
-              </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={statusData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#8884d8">
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Weekly Completion Trend */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Weekly Completion Trend</CardTitle>
+          <CardDescription>Task completions over the last 7 days</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey="completions" 
+                  stroke="#3B82F6" 
+                  strokeWidth={2}
+                  dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Activity */}
       <Card>

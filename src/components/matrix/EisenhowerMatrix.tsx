@@ -15,7 +15,7 @@ interface EisenhowerMatrixProps {
 }
 
 export function EisenhowerMatrix({ tasks, onTaskMove, onTaskUpdate, onTaskDelete }: EisenhowerMatrixProps) {
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const [, setActiveId] = useState<string | null>(null)
 
   // Categorize tasks by quadrant
   const getTasksByQuadrant = (quadrant: Quadrant) => {
