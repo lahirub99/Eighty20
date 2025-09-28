@@ -95,66 +95,68 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Eighty20 Dashboard</h1>
-        <p className="text-muted-foreground">
+      <div className="mb-8 animate-fade-in-up">
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+          Eighty20 Dashboard
+        </h1>
+        <p className="text-muted-foreground text-lg mt-2">
           Focus on the 20% of tasks that drive 80% of your results using the Eisenhower Matrix.
         </p>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card className="glass-card animate-slide-in-right hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Tasks</p>
-                <p className="text-2xl font-bold">{totalTasks}</p>
+                <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
               </div>
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 text-sm">📋</span>
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                <span className="text-white text-lg">📋</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-card animate-slide-in-right hover:shadow-xl transition-all duration-300" style={{ animationDelay: '0.1s' }}>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Completed Today</p>
-                <p className="text-2xl font-bold" style={{ color: '#10B981' }}>{completedToday}</p>
+                <p className="text-2xl font-bold text-green-600">{completedToday}</p>
               </div>
-              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                <span className="text-white text-lg">✓</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-card animate-slide-in-right hover:shadow-xl transition-all duration-300" style={{ animationDelay: '0.2s' }}>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold" style={{ color: '#3B82F6' }}>{inProgressTasks}</p>
+                <p className="text-2xl font-bold text-blue-600">{inProgressTasks}</p>
               </div>
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 text-sm">▶️</span>
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                <span className="text-white text-lg">▶️</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-card animate-slide-in-right hover:shadow-xl transition-all duration-300" style={{ animationDelay: '0.3s' }}>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Completion Rate</p>
-                <p className="text-2xl font-bold" style={{ color: '#F59E0B' }}>{completionRate}%</p>
+                <p className="text-2xl font-bold text-yellow-600">{completionRate}%</p>
               </div>
-              <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
-                <span className="text-yellow-600 text-sm">📊</span>
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg">
+                <span className="text-white text-lg">📊</span>
               </div>
             </div>
           </CardContent>
@@ -164,10 +166,12 @@ export default function HomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Eisenhower Matrix */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="glass-card animate-fade-in-up">
             <CardHeader>
-              <CardTitle>Eisenhower Matrix</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                Eisenhower Matrix
+              </CardTitle>
+              <CardDescription className="text-lg">
                 Organize your tasks by urgency and importance. Drag tasks between quadrants to reprioritize.
               </CardDescription>
             </CardHeader>

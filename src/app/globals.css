@@ -50,9 +50,26 @@
 }
 
 body {
-  background-color: hsl(var(--background));
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   color: hsl(var(--foreground));
   font-feature-settings: "rlig" 1, "calt" 1;
+  min-height: 100vh;
+}
+
+/* Subtle background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Eisenhower Matrix Quadrant Colors */
@@ -80,13 +97,27 @@ body {
   color: #047857;
 }
 
-/* Task card styles */
+/* Enhanced card styles */
 .task-card {
-  @apply bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow;
+  @apply bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-sm hover:shadow-lg transition-all duration-300;
 }
 
 .task-card:hover {
-  @apply border-gray-300;
+  @apply border-gray-300/70 shadow-xl transform -translate-y-1;
+}
+
+/* Glass morphism effect for cards */
+.glass-card {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 rounded-xl shadow-lg;
+}
+
+/* Enhanced quadrant styles */
+.quadrant-enhanced {
+  @apply backdrop-blur-sm bg-white/60 border border-white/30 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+.quadrant-enhanced:hover {
+  @apply transform scale-105;
 }
 
 /* Drag and drop styles */
@@ -131,4 +162,75 @@ body {
 .drop-zone.q4.drag-over {
   border-color: #10B981;
   background-color: #D1FAE5;
+}
+
+/* Beautiful animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Animation classes */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Enhanced button styles */
+.btn-enhanced {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+}
+
+.btn-outline-enhanced {
+  @apply border-2 border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1;
+}
+
+/* Beautiful gradient backgrounds for different sections */
+.gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.gradient-warning {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.gradient-info {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
 }

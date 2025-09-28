@@ -177,9 +177,10 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={`
-        bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all
+        bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 shadow-lg hover:shadow-xl transition-all duration-300
         ${isDragging ? 'opacity-50 rotate-2 scale-105' : ''}
-        cursor-grab active:cursor-grabbing
+        cursor-grab active:cursor-grabbing hover:-translate-y-1
+        task-card
       `}
       {...attributes}
       {...listeners}

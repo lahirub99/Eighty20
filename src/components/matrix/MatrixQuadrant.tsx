@@ -52,9 +52,10 @@ export function MatrixQuadrant({ quadrant, config, tasks, onTaskUpdate, onTaskDe
     <div
       ref={setNodeRef}
       className={`
-        p-6 rounded-lg border-2 min-h-[200px] transition-all duration-200
-        ${isOver ? 'ring-2 ring-blue-400 ring-opacity-50' : ''}
-        hover:shadow-lg hover:scale-105
+        p-6 rounded-xl border-2 min-h-[200px] transition-all duration-300 backdrop-blur-sm
+        ${isOver ? 'ring-2 ring-blue-400 ring-opacity-50 scale-105' : ''}
+        hover:shadow-xl hover:scale-105 hover:backdrop-blur-md
+        quadrant-enhanced
       `}
       style={quadrantStyles}
     >
