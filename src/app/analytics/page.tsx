@@ -40,11 +40,11 @@ export default function AnalyticsPage() {
   const pendingTasks = tasks.filter(task => task.status === 'pending').length
   const cancelledTasks = tasks.filter(task => task.status === 'cancelled').length
 
-  // Quadrant distribution
-  const q1Tasks = tasks.filter(task => task.urgency >= 3 && task.importance >= 3)
-  const q2Tasks = tasks.filter(task => task.importance >= 3 && task.urgency < 3)
-  const q3Tasks = tasks.filter(task => task.urgency >= 3 && task.importance < 3)
-  const q4Tasks = tasks.filter(task => task.urgency < 3 && task.importance < 3)
+  // Quadrant distribution using 1-10 scale (5+ for high, <5 for low)
+  const q1Tasks = tasks.filter(task => task.urgency >= 5 && task.importance >= 5)
+  const q2Tasks = tasks.filter(task => task.importance >= 5 && task.urgency < 5)
+  const q3Tasks = tasks.filter(task => task.urgency >= 5 && task.importance < 5)
+  const q4Tasks = tasks.filter(task => task.urgency < 5 && task.importance < 5)
 
   // Completion rate
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0

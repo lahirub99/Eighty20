@@ -83,16 +83,16 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
 
   const handleUrgencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const numValue = value === '' ? 1 : parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+    const numValue = value === '' ? 5 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
       setEditData({ ...editData, urgency: numValue })
     }
   }
 
   const handleImportanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const numValue = value === '' ? 1 : parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+    const numValue = value === '' ? 5 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
       setEditData({ ...editData, importance: numValue })
     }
   }
@@ -130,7 +130,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 id={`urgency-${task.id}`}
                 type="number"
                 min="1"
-                max="4"
+                max="10"
                 value={editData.urgency}
                 onChange={handleUrgencyChange}
                 className="text-sm"
@@ -142,7 +142,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 id={`importance-${task.id}`}
                 type="number"
                 min="1"
-                max="4"
+                max="10"
                 value={editData.importance}
                 onChange={handleImportanceChange}
                 className="text-sm"

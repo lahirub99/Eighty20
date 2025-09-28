@@ -132,10 +132,16 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete }: TaskListProps) {
                 onChange={(e) => setUrgencyFilter(e.target.value)}
               >
                 <option value="all">All Urgency</option>
-                <option value="1">1 - Low</option>
-                <option value="2">2 - Medium</option>
-                <option value="3">3 - High</option>
-                <option value="4">4 - Critical</option>
+                <option value="1">1 - Very Low</option>
+                <option value="2">2 - Low</option>
+                <option value="3">3 - Low-Medium</option>
+                <option value="4">4 - Medium-Low</option>
+                <option value="5">5 - Medium</option>
+                <option value="6">6 - Medium-High</option>
+                <option value="7">7 - High</option>
+                <option value="8">8 - Very High</option>
+                <option value="9">9 - Critical</option>
+                <option value="10">10 - Extreme</option>
               </select>
             </div>
             <div>
@@ -147,10 +153,16 @@ export function TaskList({ tasks, onTaskUpdate, onTaskDelete }: TaskListProps) {
                 onChange={(e) => setImportanceFilter(e.target.value)}
               >
                 <option value="all">All Importance</option>
-                <option value="1">1 - Low</option>
-                <option value="2">2 - Medium</option>
-                <option value="3">3 - High</option>
-                <option value="4">4 - Critical</option>
+                <option value="1">1 - Very Low</option>
+                <option value="2">2 - Low</option>
+                <option value="3">3 - Low-Medium</option>
+                <option value="4">4 - Medium-Low</option>
+                <option value="5">5 - Medium</option>
+                <option value="6">6 - Medium-High</option>
+                <option value="7">7 - High</option>
+                <option value="8">8 - Very High</option>
+                <option value="9">9 - Critical</option>
+                <option value="10">10 - Extreme</option>
               </select>
             </div>
           </div>

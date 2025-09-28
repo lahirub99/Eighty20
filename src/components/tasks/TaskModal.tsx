@@ -18,8 +18,8 @@ export function TaskModal({ isOpen, onClose, onSubmit }: TaskModalProps) {
   const [formData, setFormData] = useState<CreateTaskData>({
     title: '',
     description: '',
-    urgency: 1,
-    importance: 1,
+    urgency: 5,
+    importance: 5,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,8 +29,8 @@ export function TaskModal({ isOpen, onClose, onSubmit }: TaskModalProps) {
       setFormData({
         title: '',
         description: '',
-        urgency: 1,
-        importance: 1,
+        urgency: 5,
+        importance: 5,
       })
       onClose()
     }
@@ -38,28 +38,28 @@ export function TaskModal({ isOpen, onClose, onSubmit }: TaskModalProps) {
 
   const handleUrgencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const numValue = value === '' ? 1 : parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+    const numValue = value === '' ? 5 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
       setFormData({ ...formData, urgency: numValue })
     }
   }
 
   const handleImportanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const numValue = value === '' ? 1 : parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= 4) {
+    const numValue = value === '' ? 5 : parseInt(value, 10)
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
       setFormData({ ...formData, importance: numValue })
     }
   }
 
   const getQuadrantDescription = (urgency: number, importance: number) => {
-    if (urgency >= 3 && importance >= 3) {
+    if (urgency >= 5 && importance >= 5) {
       return "Do First - Urgent & Important"
     }
-    if (importance >= 3 && urgency < 3) {
+    if (importance >= 5 && urgency < 5) {
       return "Schedule - Important, Not Urgent"
     }
-    if (urgency >= 3 && importance < 3) {
+    if (urgency >= 5 && importance < 5) {
       return "Delegate - Urgent, Not Important"
     }
     return "Eliminate - Neither Urgent nor Important"
@@ -109,36 +109,36 @@ export function TaskModal({ isOpen, onClose, onSubmit }: TaskModalProps) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="urgency" className="text-sm font-semibold text-gray-700 block mb-2">
-                  Urgency (1-4)
+                  Urgency (1-10)
                 </Label>
                 <Input
                   id="urgency"
                   type="number"
                   min="1"
-                  max="4"
+                  max="10"
                   value={formData.urgency}
                   onChange={handleUrgencyChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  1=Low, 2=Medium, 3=High, 4=Critical
+                  1=Very Low, 5=Medium, 10=Critical
                 </p>
               </div>
               <div>
                 <Label htmlFor="importance" className="text-sm font-semibold text-gray-700 block mb-2">
-                  Importance (1-4)
+                  Importance (1-10)
                 </Label>
                 <Input
                   id="importance"
                   type="number"
                   min="1"
-                  max="4"
+                  max="10"
                   value={formData.importance}
                   onChange={handleImportanceChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  1=Low, 2=Medium, 3=High, 4=Critical
+                  1=Very Low, 5=Medium, 10=Critical
                 </p>
               </div>
             </div>

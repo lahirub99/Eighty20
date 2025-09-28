@@ -14,8 +14,8 @@ model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  urgency     Int      @default(1) // 1-4 scale
-  importance  Int      @default(1) // 1-4 scale
+  urgency     Int      @default(1) // 1-10 scale
+  importance  Int      @default(1) // 1-10 scale
   status      String   @default("pending") // pending, in_progress, completed, cancelled
   dueDate     DateTime?
   completedAt DateTime?

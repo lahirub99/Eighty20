@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { DndContext, DragEndEvent, DragStartEvent, closestCenter } from '@dnd-kit/core'
 import { Task } from '@/types'
-import { QUADRANT_CONFIG } from '@/types'
+import { QUADRANT_CONFIG, isHighUrgency, isHighImportance, getSmartDefaults } from '@/types'
 import { Quadrant } from '@/types'
 import { MatrixQuadrant } from './MatrixQuadrant'
 
@@ -17,12 +17,12 @@ interface EisenhowerMatrixProps {
 export function EisenhowerMatrix({ tasks, onTaskMove, onTaskUpdate, onTaskDelete }: EisenhowerMatrixProps) {
   const [, setActiveId] = useState<string | null>(null)
 
-  // Categorize tasks by quadrant
+  // Categorize tasks by quadrant using 1-10 scale (5+ for high, <5 for low)
   const getTasksByQuadrant = (quadrant: Quadrant) => {
     return tasks.filter(task => {
       const config = QUADRANT_CONFIG[quadrant]
-      const matchesUrgency = config.urgency ? task.urgency >= 3 : task.urgency < 3
-      const matchesImportance = config.importance ? task.importance >= 3 : task.importance < 3
+      const matchesUrgency = config.urgency ? isHighUrgency(task.urgency) : !isHighUrgency(task.urgency)
+      const matchesImportance = config.importance ? isHighImportance(task.importance) : !isHighImportance(task.importance)
       return matchesUrgency && matchesImportance
     })
   }
@@ -40,10 +40,22 @@ export function EisenhowerMatrix({ tasks, onTaskMove, onTaskUpdate, onTaskDelete
     const taskId = parseInt(active.id as string)
     const targetQuadrant = over.id as Quadrant
 
-    // Calculate new urgency and importance based on target quadrant
-    const config = QUADRANT_CONFIG[targetQuadrant]
-    const newUrgency = config.urgency ? 4 : 1
-    const newImportance = config.importance ? 4 : 1
+    // Find the current task to determine source quadrant
+    const currentTask = tasks.find(task => task.id === taskId)
+    if (!currentTask) return
+
+    // Determine source quadrant
+    const currentUrgency = isHighUrgency(currentTask.urgency)
+    const currentImportance = isHighImportance(currentTask.importance)
+    let sourceQuadrant: Quadrant
+    
+    if (currentUrgency && currentImportance) sourceQuadrant = 'q1'
+    else if (!currentUrgency && currentImportance) sourceQuadrant = 'q2'
+    else if (currentUrgency && !currentImportance) sourceQuadrant = 'q3'
+    else sourceQuadrant = 'q4'
+
+    // Get smart defaults for the move
+    const { urgency: newUrgency, importance: newImportance } = getSmartDefaults(sourceQuadrant, targetQuadrant)
 
     onTaskMove(taskId, newUrgency, newImportance)
   }
