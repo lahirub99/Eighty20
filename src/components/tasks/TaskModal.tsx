@@ -68,7 +68,7 @@ export function TaskModal({ isOpen, onClose, onSubmit }: TaskModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-md bg-white shadow-2xl border-0">
         <CardHeader className="bg-white border-b border-gray-200">
           <CardTitle className="text-xl font-bold text-gray-900">Add New Task</CardTitle>
