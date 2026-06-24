@@ -34,7 +34,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id.toString() })
+  } = useSortable({ id: task.id.toString(), activationConstraint: { distance: 5 } })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -177,71 +177,71 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={`
-        bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 shadow-lg hover:shadow-xl transition-all duration-300
+        bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300
         ${isDragging ? 'opacity-50 rotate-2 scale-105' : ''}
-        cursor-grab active:cursor-grabbing hover:-translate-y-1
         task-card
       `}
-      {...attributes}
-      {...listeners}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-sm truncate">{task.title}</h4>
-          {task.description && (
-            <p className="text-xs text-gray-600 mt-1 line-clamp-2">{task.description}</p>
-          )}
-          {task.dueDate && (
-            <p className="text-xs text-blue-600 mt-1">
-              Due: {new Date(task.dueDate).toLocaleDateString()}
-            </p>
-          )}
-          <div className="flex items-center gap-2 mt-2">
+      {/* Drag handle — only this area initiates drag */}
+      <div
+        className="flex items-center gap-2 px-3 pt-2 pb-1 cursor-grab active:cursor-grabbing select-none"
+        {...attributes}
+        {...listeners}
+      >
+        <svg className="w-3 h-3 text-gray-400 shrink-0" fill="currentColor" viewBox="0 0 10 16">
+          <circle cx="2" cy="2" r="1.5" /><circle cx="8" cy="2" r="1.5" />
+          <circle cx="2" cy="8" r="1.5" /><circle cx="8" cy="8" r="1.5" />
+          <circle cx="2" cy="14" r="1.5" /><circle cx="8" cy="14" r="1.5" />
+        </svg>
+        <h4 className="font-medium text-sm truncate flex-1">{task.title}</h4>
+      </div>
+
+      {/* Content + actions — clicks here do NOT start a drag */}
+      <div className="px-3 pb-3">
+        {task.description && (
+          <p className="text-xs text-gray-600 mb-1 line-clamp-2">{task.description}</p>
+        )}
+        {task.dueDate && (
+          <p className="text-xs text-blue-600 mb-1">
+            Due: {new Date(task.dueDate).toLocaleDateString()}
+          </p>
+        )}
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-2">
             <Badge style={getStatusColor(task.status)}>
               {task.status.replace('_', ' ')}
             </Badge>
-            <span className="text-xs text-gray-500">
-              U:{task.urgency} I:{task.importance}
-            </span>
+            <span className="text-xs text-gray-500">U:{task.urgency} I:{task.importance}</span>
           </div>
-        </div>
-        <div className="flex gap-1 ml-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-6 p-0"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleStatusChange('completed')
-            }}
-            title="Mark as completed"
-          >
-            ✓
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-6 p-0"
-            onClick={(e) => {
-              e.stopPropagation()
-              setIsEditing(true)
-            }}
-            title="Edit task"
-          >
-            ✏️
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-6 p-0"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete(task.id)
-            }}
-            title="Delete task"
-          >
-            ×
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-6 p-0"
+              onClick={() => handleStatusChange('completed')}
+              title="Mark as completed"
+            >
+              ✓
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-6 p-0"
+              onClick={() => setIsEditing(true)}
+              title="Edit task"
+            >
+              ✏️
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-6 p-0"
+              onClick={() => onDelete(task.id)}
+              title="Delete task"
+            >
+              ×
+            </Button>
+          </div>
         </div>
       </div>
     </div>
